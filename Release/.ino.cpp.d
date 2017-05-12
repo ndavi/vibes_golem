@@ -29,7 +29,7 @@
  /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/OSC/OSCData.h \
  /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/OSC/OSCTiming.h \
  /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/OSC/OSCBoards.h \
- ../WiFiUdpNtpClient.ino
+ ../golem_vibes.ino
 
 /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Arduino.h:
 
@@ -91,4 +91,4 @@
 
 /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/OSC/OSCBoards.h:
 
-../WiFiUdpNtpClient.ino:
+../golem_vibes.ino:
