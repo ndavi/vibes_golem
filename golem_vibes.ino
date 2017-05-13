@@ -6,6 +6,7 @@
 #include <OSCBoards.h>
 #include <Wire.h> //communication avec le shield
 #include <Adafruit_MotorShield.h> // !!!! A telecharger + modif en fonction du shield utilisé !!!!
+#include<Time.h>
 
 #define MOTEUR_AVANCE 1
 #define MOTEUR_RECULE 0
@@ -17,6 +18,7 @@ Servo servoDroit; //décla objet servo oeil droit
 int pinServoGauche=0; //décla pin servo gauche !!!! A DEFINIR !!!!
 int pinServoDroit=0; //décla pin servo droit !!!! A DEFINIR !!!!
 
+
 //+++++++++++engrenage+++++++++++
 // !!!!!! VALABLE UNIQUEMENT SI SHIELD ADAFRUIT !!!!!!!!
 
@@ -27,20 +29,8 @@ Adafruit_DCMotor *moteurEngrenage = shieldMotor.getMotor(1);
 
 Adafruit_DCMotor *moteurPaupGauche = shieldMotor.getMotor(2);
 Adafruit_DCMotor *moteurPaupDroit = shieldMotor.getMotor(3);
-
-//On défini les variables des microrupteurs
-
-int pinSHG = 0; // pin microrupteur haut gauche !!!!! A DEFINIR !!!!!
-int stopHautGauche = 1; //signal Microrupteur haut gauche
-
-int pinSBG = 0; //pin microrupteur bas gauche  !!!!! A DEFINIR !!!!!!
-int stopBasGauche = 1; //signal microrupteur bas droit
-
-int pinSHD = 0; //pin microrupteur haut droit !!!!! A DEFINIR !!!!!
-int stopHautDroit = 1; //signal microrupteur haut droit
-
-int pinSBD = 0; //pin microrupteur bas droit !!!!! A DEFINIR !!!!!
-int stopBasDroit = 1; //signal microrupteur bas droit
+unsigned long timeOeilGauche;
+unsigned long timeOeilDroit;
 
 // les signaux de microrupteur sont par défaut sur 1. Quand microrupteur activé = 0.
 // Si panne ou arrachement de cable le microrupteur sur mettra sur 0 et le système s'arrete = meilleur sécu
@@ -63,7 +53,7 @@ float angleGauche = 0; //VALEUR OSC A RECUP; //Valeur OSC Angle oeil gauche en f
 float angleDroit = 0; //Valeur OSC A RECUP; //Valeur OSC angle oeil droit en float
 
 //STOP MOTEURS
-/On défini les variables des microrupteurs
+//On défini les variables des microrupteurs
 
 int pinSHG = 0; // pin microrupteur haut gauche !!!!! A DEFINIR !!!!!
 int stopHautGauche = 1; //signal Microrupteur haut gauche
@@ -72,13 +62,15 @@ int pinSBG = 0; //pin microrupteur bas gauche  !!!!! A DEFINIR !!!!!!
 int stopBasGauche = 1; //signal microrupteur bas droit
 
 int pinSHD = 0; //pin microrupteur haut droit !!!!! A DEFINIR !!!!!
-int stopHautGauche = 1; //signal microrupteur haut droit
+int stopHautDroite = 1; //signal microrupteur haut droit
 
 int pinSBD = 0; //pin microrupteur bas droit !!!!! A DEFINIR !!!!!
-int stopBasDroit = 1; //signal microrupteur bas droit
+int stopBasDroite = 1; //signal microrupteur bas droit
 
 // les signaux de microrupteur sont par défaut sur 1. Quand microrupteur activé = 0.
 // Si panne ou arrachement de cable le microrupteur sur mettra sur 0 et le système s'arrete = meilleur sécu
+float pourcentagePositionOeilGauche = 0;
+float pourcentagePositionOeilDroit = 0;
 
 
 void toggleEngrenage(OSCMessage &msg, int addrOffset ){
@@ -182,6 +174,7 @@ void setupMoteurs() {
 	servoGauche.attach(pinServoGauche); //mode output servo gauche
 	servoDroit.attach(pinServoDroit); //mode output servo droit
 
+
 	//engrenage + paupiere lancement de la com entre le arduino et le shield motor
 	shieldMotor.begin();
 
@@ -193,8 +186,13 @@ void setupMoteurs() {
 
 
 	// initialisation paupière ----------------
+	//Pin rupteurs paupières
+	pinMode(stopHautGauche, INPUT);
+	pinMode(stopHautDroite, INPUT);
+	pinMode(stopBasDroite, INPUT);
+	pinMode(stopBasGauche, INPUT);
 
-	// A ecrire
+	setupPaupieres();
 }
 
 void loopMoteurs() {
@@ -223,6 +221,32 @@ void loopMoteurs() {
 	servoDroit.write(aD);
 
 	//Paupière ------------------------------------------------------------------------
+	loopPaupieres();
+}
+
+void setupPaupieres() {
+	while(stopHautGauche == HIGH) {
+		moteurPaupGauche->run(BACKWARD);
+	}
+	timeOeilGauche = millis();
+	while(stopBasGauche == HIGH) {
+		moteurPaupGauche->run(FORWARD);
+	}
+	timeOeilGauche = millis() - timeOeilGauche;
+
+	while(stopHautDroite == HIGH) {
+		moteurPaupDroit->run(BACKWARD);
+	}
+	timeOeilDroit = millis();
+	while(stopBasDroite == HIGH) {
+		moteurPaupDroit->run(FORWARD);
+	}
+	timeOeilDroit = millis() - timeOeilDroit;
+}
+void loopPaupieres() {
+	if(stopHautGauche != LOW && stopBasGauche != LOW) {
+
+	}
 }
 
 

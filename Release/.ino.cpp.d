@@ -34,6 +34,8 @@
  /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/libraries/Wire/src/Wire.h \
  /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Adafruit_Motor_Shield/Adafruit_MotorShield.h \
  /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Adafruit_Motor_Shield/../Adafruit_Motor_Shield/utility/Adafruit_MS_PWMServoDriver.h \
+ /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Time/Time.h \
+ /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Time/TimeLib.h \
  ../golem_vibes.ino
 
 /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Arduino.h:
@@ -105,5 +107,9 @@
 /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Adafruit_Motor_Shield/Adafruit_MotorShield.h:
 
 /home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Adafruit_Motor_Shield/../Adafruit_Motor_Shield/utility/Adafruit_MS_PWMServoDriver.h:
+
+/home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Time/Time.h:
+
+/home/nico/Documents/sloeber-workspace/golem_vibes/libraries/Time/TimeLib.h:
 
 ../golem_vibes.ino:

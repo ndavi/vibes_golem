@@ -13,6 +13,7 @@ RM := rm -f
 -include libraries/Wire/src/subdir.mk
 -include libraries/WiFi/src/utility/subdir.mk
 -include libraries/WiFi/src/subdir.mk
+-include libraries/Time/subdir.mk
 -include libraries/Servo/src/stm32f4/subdir.mk
 -include libraries/Servo/src/samd/subdir.mk
 -include libraries/Servo/src/sam/subdir.mk

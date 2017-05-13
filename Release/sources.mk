@@ -52,6 +52,7 @@ libraries/Servo/src/nrf52 \
 libraries/Servo/src/sam \
 libraries/Servo/src/samd \
 libraries/Servo/src/stm32f4 \
+libraries/Time \
 libraries/WiFi/src \
 libraries/WiFi/src/utility \
 libraries/Wire/src \
