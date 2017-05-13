@@ -42,14 +42,29 @@
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/variants/standard</locationURI>
 		</link>
 		<link>
+			<name>libraries/Ethernet</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Ethernet/1.1.2</locationURI>
+		</link>
+		<link>
 			<name>libraries/SPI</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/libraries/SPI</locationURI>
 		</link>
 		<link>
+			<name>libraries/Servo</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/Servo/1.1.2</locationURI>
+		</link>
+		<link>
 			<name>libraries/WiFi</name>
 			<type>2</type>
 			<locationURI>ECLIPSE_HOME/arduinoPlugin/libraries/WiFi/1.2.6</locationURI>
+		</link>
+		<link>
+			<name>libraries/Wire</name>
+			<type>2</type>
+			<locationURI>ECLIPSE_HOME/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/libraries/Wire</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

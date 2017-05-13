@@ -37,12 +37,23 @@ CPP_DEPS :=
 SUBDIRS := \
 . \
 core/core \
+libraries/Adafruit_Motor_Shield \
+libraries/Adafruit_Motor_Shield/utility \
+libraries/Ethernet/src \
+libraries/Ethernet/src/utility \
 libraries/OSC/Applications/Processing/SLIPSerialToUDP \
 libraries/OSC/Applications/Processing/UDPReceiveBundle \
 libraries/OSC/Applications/Processing/UDPReceiveMessage \
 libraries/OSC/Applications/Processing/serialSend \
 libraries/OSC \
 libraries/SPI/src \
+libraries/Servo/src/avr \
+libraries/Servo/src/nrf52 \
+libraries/Servo/src/sam \
+libraries/Servo/src/samd \
+libraries/Servo/src/stm32f4 \
 libraries/WiFi/src \
 libraries/WiFi/src/utility \
+libraries/Wire/src \
+libraries/Wire/src/utility \
 

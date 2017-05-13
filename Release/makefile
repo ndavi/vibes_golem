@@ -9,14 +9,25 @@ RM := rm -f
 # All of the sources participating in the build are defined here
 -include sources.mk
 -include subdir.mk
+-include libraries/Wire/src/utility/subdir.mk
+-include libraries/Wire/src/subdir.mk
 -include libraries/WiFi/src/utility/subdir.mk
 -include libraries/WiFi/src/subdir.mk
+-include libraries/Servo/src/stm32f4/subdir.mk
+-include libraries/Servo/src/samd/subdir.mk
+-include libraries/Servo/src/sam/subdir.mk
+-include libraries/Servo/src/nrf52/subdir.mk
+-include libraries/Servo/src/avr/subdir.mk
 -include libraries/SPI/src/subdir.mk
 -include libraries/OSC/Applications/Processing/serialSend/subdir.mk
 -include libraries/OSC/Applications/Processing/UDPReceiveMessage/subdir.mk
 -include libraries/OSC/Applications/Processing/UDPReceiveBundle/subdir.mk
 -include libraries/OSC/Applications/Processing/SLIPSerialToUDP/subdir.mk
 -include libraries/OSC/subdir.mk
+-include libraries/Ethernet/src/utility/subdir.mk
+-include libraries/Ethernet/src/subdir.mk
+-include libraries/Adafruit_Motor_Shield/utility/subdir.mk
+-include libraries/Adafruit_Motor_Shield/subdir.mk
 -include core/core/subdir.mk
 -include objects.mk
 
