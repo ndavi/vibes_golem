@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2017-05-13 21:59:39
+//This file has been generated on 2017-05-14 03:26:17
 
 #include "Arduino.h"
 #include <Servo.h>
@@ -14,11 +14,6 @@
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include<Time.h>
-void toggleEngrenage(OSCMessage &msg, int addrOffset );
-void changeSensEngrenage(OSCMessage &msg, int addrOffset );
-void changeVitesseEngrenage(OSCMessage &msg, int addrOffset );
-void changeAngleOeilGauche(OSCMessage &msg, int addrOffset );
-void changeAngleOeilDroit(OSCMessage &msg, int addrOffset );
 void setupReseau() ;
 void setup() ;
 void loop() ;
@@ -27,8 +22,18 @@ void setupMoteurs() ;
 void loopMoteurs() ;
 void setupPaupieres() ;
 void loopPaupieres() ;
+void toggleEngrenage(OSCMessage &msg);
+void changeSensEngrenage(OSCMessage &msg);
+void changeVitesseEngrenage(OSCMessage &msg);
+void changeAngleOeilGauche(OSCMessage &msg);
+void changeAngleOeilDroit(OSCMessage &msg);
+void changePositionPaupiereGauche(OSCMessage &msg);
+void changePositionPaupiereDroite(OSCMessage &msg);
+void mockPaupieres() ;
 
-#include "golem_vibes.ino"
 
+#include "a_variables.ino"
+#include "b_golem.ino"
+#include "c_oscSetter.ino"
 
 #endif
