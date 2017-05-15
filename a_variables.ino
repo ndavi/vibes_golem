@@ -62,7 +62,10 @@ bool setupFinished = false;
 
 //Temps que mettent les moteurs à faire un aller
 unsigned long timeOeilGauche;
+unsigned long timeOeilGaucheInverse;
 unsigned long timeOeilDroit;
+unsigned long timeOeilDroitInverse;
+
 
 float pourcentagePositionPaupiereGauche = 0;
 float lastPourcentagePositionOeilGauche = 0;

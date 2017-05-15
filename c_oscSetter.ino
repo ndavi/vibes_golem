@@ -66,13 +66,3 @@ void changePositionPaupiereDroite(OSCMessage &msg){
 		}
 	}
 }
-
-void mockPaupieres() {
-	pourcentagePositionPaupiereGauche = 0.2;
-	lastPourcentagePositionOeilGauche = 0.7;
-	timeOeilGauche = 5000;
-	setupFinished = true;
-	stopHautGauche = HIGH;
-	stopBasGauche = HIGH;
-	GOMoteurGauche = true;
-}

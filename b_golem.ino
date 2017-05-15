@@ -6,7 +6,7 @@
 #include <OSCBoards.h>
 #include <Wire.h> //communication avec le shield
 #include <Adafruit_MotorShield.h> // !!!! A telecharger + modif en fonction du shield utilisé !!!!
-#include<Time.h>
+#include <Time.h>
 
 #define MOTEUR_AVANCE 1
 #define MOTEUR_RECULE 0
@@ -24,6 +24,7 @@ void setup() {
 	}
 	Serial.println("Serial setup");
 	mockPaupieres();
+	//setupPaupieres();
 	//setupMoteurs();
 	//setupReseau();
 }
@@ -38,7 +39,7 @@ void getOSCMessages() {
 	// wait to see if a reply is available
 	OSCBundle bundleIN;
 	int size;
-	if((size = Udp.parsePacket())>0)	{
+	if((size = Udp.parsePacket())>0) {
 
 		while(size--) {
 			bundleIN.fill(Udp.read());
@@ -49,8 +50,8 @@ void getOSCMessages() {
 			Serial.println("Received OSC" + osc.getType(0));
 			//ENGRENAGE GOLEM
 			bundleIN.dispatch("/golem/toggleEngrenage", toggleEngrenage);
-			bundleIN.dispatch("/golem/sensEngrenage", toggleEngrenage);
-			bundleIN.dispatch("/golem/vitesseEngrenage", toggleEngrenage);
+			bundleIN.dispatch("/golem/sensEngrenage", changeSensEngrenage);
+			bundleIN.dispatch("/golem/vitesseEngrenage", changeVitesseEngrenage);
 			//ANGLE YEUX
 			bundleIN.dispatch("/golem/angleOeilGauche", changeAngleOeilGauche);
 			bundleIN.dispatch("/golem/angleOeilDroit", changeAngleOeilDroit);
@@ -91,7 +92,6 @@ void setupMoteurs() {
 	pinMode(stopBasDroite, INPUT);
 	pinMode(stopBasGauche, INPUT);
 
-	setupPaupieres();
 }
 
 void loopMoteurs() {
@@ -130,6 +130,12 @@ void setupPaupieres() {
 	}
 	timeOeilGauche = millis() - timeOeilGauche;
 
+	timeOeilGaucheInverse = millis();
+	while(stopHautGauche == HIGH) {
+		moteurPaupGauche->run(BACKWARD);
+	}
+	timeOeilGaucheInverse = millis() - timeOeilGaucheInverse;
+
 	while(stopHautDroite == HIGH) {
 		moteurPaupDroit->run(BACKWARD);
 	}
@@ -138,6 +144,13 @@ void setupPaupieres() {
 		moteurPaupDroit->run(FORWARD);
 	}
 	timeOeilDroit = millis() - timeOeilDroit;
+
+	timeOeilDroitInverse = millis();
+	while(stopHautDroite == HIGH) {
+		moteurPaupDroit->run(BACKWARD);
+	}
+	timeOeilDroitInverse = millis() - timeOeilDroitInverse;
+
 	setupFinished = true;
 }
 
@@ -164,25 +177,40 @@ void loopPaupieres() {
 			debug = "Pourcentage destination : ";
 			Serial.println(debug + pourcentageDestination);
 			paupiereGaucheBouge = true;
-		}
-		if (paupiereGaucheAvance)
-			;
-		//moteurPaupGauche->run(FORWARD);
-		else
-			;
-		//moteurPaupGauche->run(BACKWARD);
-		float tempsPasse = millis() - timerMouvOeilGauche;
-		if(tempsPasse >= tempsMouvOeilGauche) {
-			//moteurPaupGauche->run(RELEASE);
-			Serial.println("STOP Oeil Gauche");
-			paupiereGaucheBouge = false;
-			GOMoteurGauche = false;
-			lastPourcentagePositionOeilGauche = pourcentagePositionPaupiereGauche;
+		} else {
+			float tempsPasse = millis() - timerMouvOeilGauche;
+			float pourcentageTempsRestant = 1 - ((tempsMouvOeilGauche - tempsPasse) / tempsMouvOeilGauche);
+			float tempsRestant = tempsMouvOeilGauche - tempsPasse;
+			debug = "Pourcentage temps restant : ";
+			Serial.println(debug + pourcentageTempsRestant);
+			float positionActuelle;
+			if (paupiereGaucheAvance) {
+				positionActuelle = (lastPourcentagePositionOeilGauche + pourcentageTempsRestant);
+			}
+			else {
+				positionActuelle = lastPourcentagePositionOeilGauche - pourcentageTempsRestant;
+			}
+			debug = "Position actuelle";
+			Serial.println(debug + positionActuelle);
+			if(tempsPasse >= tempsMouvOeilGauche) {
+				//moteurPaupGauche->run(RELEASE);
+				Serial.println("STOP Oeil Gauche");
+				paupiereGaucheBouge = false;
+				GOMoteurGauche = false;
+				lastPourcentagePositionOeilGauche = pourcentagePositionPaupiereGauche;
+			}
 		}
 	}
 }
-
-
+void mockPaupieres() {
+	pourcentagePositionPaupiereGauche = 0.7;
+	lastPourcentagePositionOeilGauche = 0.2;
+	timeOeilGauche = 5000;
+	setupFinished = true;
+	stopHautGauche = HIGH;
+	stopBasGauche = HIGH;
+	GOMoteurGauche = true;
+}
 
 
 
