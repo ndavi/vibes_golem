@@ -1,12 +1,11 @@
 #include <Servo.h> //impor bibli servoMoteurs
 #include <SPI.h>
-#include <Ethernet.h>
-#include <EthernetUdp.h>
-#include <OSCBundle.h>
-#include <OSCBoards.h>
+//#include <Ethernet.h>
+//#include <EthernetUdp.h>
 #include <Wire.h> //communication avec le shield
 #include <Adafruit_MotorShield.h> // !!!! A telecharger + modif en fonction du shield utilisé !!!!
 #include <Time.h>
+#include <OscUDP.h>
 
 #define MOTEUR_AVANCE 1
 #define MOTEUR_RECULE 0
@@ -15,64 +14,75 @@
 void setupReseau() {
 	Serial.println("Connexion au reseau");
 	Ethernet.begin(mac,ip);
+	Udp.begin(localPort);
+	etherOSC.begin(Udp);
+	Serial.println("Reception OSC activee");
 }
 
 void setup() {
 	Serial.begin(9600);
-	while (!Serial) {
-		; // wait for serial port to connect. Needed for native USB port only
-	}
 	Serial.println("Serial setup");
-	mockPaupieres();
+	setupReseau();
+	//mockPaupieres();
+	//mockEngrenage();
+	//setupMoteurs();
 	//setupPaupieres();
 	//setupMoteurs();
 	//setupReseau();
 }
 
 void loop() {
-	//getOSCMessages();
+	//for (int t=0; t < 180; t++) {
+	//	servoGauche.write(t);
+	//	Serial.println(t);
+	//	delay(15);
+	//}
+	//for (int t=180; t > 0; t--) {
+	//	servoGauche.write(t);
+	//	delay(15);
+	//}
+	getOSCMessages();
+	//readRupteurs();
 	//loopMoteurs();
-	loopPaupieres();
+	//loopPaupieres();
+}
+
+void readRupteurs() {
+	stopHautGauche = digitalRead(pinSHG);
+	stopBasGauche = digitalRead(pinSBG);
+	stopHautDroite = digitalRead(pinSHD);
+	stopBasDroite = digitalRead(pinSBG);
 }
 
 void getOSCMessages() {
 	// wait to see if a reply is available
-	OSCBundle bundleIN;
-	int size;
-	if((size = Udp.parsePacket())>0) {
+	etherOSC.listen();  // if there is data waiting, this will trigger OSC EVENT
+}
+void oscEvent(OscMessage &m) { // *note the & before msg
+	Serial.println("Received message");
+	Serial.println(m.getInt(0));
+	char str[16];
+	m.getAddress(str);
+	Serial.println(str);
+	//ENGRENAGE GOLEM
+	m.route("/tE", toggleEngrenageTest);
+	m.plug("/golem/engrenage/sens", toggleEngrenage);
+	m.plug("/golem/engrenage/vitesse", toggleEngrenage);
+	//ANGLE YEUX
+	m.plug("/golem/oeilGauche/angle", changeAngleOeilGauche);
+	m.plug("/golem/oeilDroit/angle", changeAngleOeilDroit);
 
-		while(size--) {
-			bundleIN.fill(Udp.read());
-		}
+	//POSITION YEUX
+	m.plug("/golem/oeilGauche/paupiere", changePositionPaupiereGauche);
+	m.plug("/golem/oeilDroit/paupiere", changePositionPaupiereDroite);
 
-		if(!bundleIN.hasError()) {
-			OSCMessage osc = bundleIN.getOSCMessage(0);
-			Serial.println("Received OSC" + osc.getType(0));
-			//ENGRENAGE GOLEM
-			bundleIN.dispatch("/golem/toggleEngrenage", toggleEngrenage);
-			bundleIN.dispatch("/golem/sensEngrenage", changeSensEngrenage);
-			bundleIN.dispatch("/golem/vitesseEngrenage", changeVitesseEngrenage);
-			//ANGLE YEUX
-			bundleIN.dispatch("/golem/angleOeilGauche", changeAngleOeilGauche);
-			bundleIN.dispatch("/golem/angleOeilDroit", changeAngleOeilDroit);
-
-			//POSITION YEUX
-			bundleIN.dispatch("/golem/positionPaupiereGauche", changePositionPaupiereGauche);
-			bundleIN.dispatch("/golem/positionPaupiereDroite", changePositionPaupiereDroite);
-
-		}
-		else {
-			OSCErrorCode errorCode = bundleIN.getError();
-			Serial.println(errorCode);
-		}
-	}
 }
 
 void setupMoteurs() {
 	Serial.println("Initialisation des moteurs");
 	//ServoMoteurs
-	servoGauche.attach(pinServoGauche); //mode output servo gauche
-	servoDroit.attach(pinServoDroit); //mode output servo droit
+	servoGauche.attach(pinServoGauche, 900, 2100); //mode output servo gauche
+	servoDroit.attach(pinServoDroit, 900, 2100); //mode output servo gauche
 
 
 	//engrenage + paupiere lancement de la com entre le arduino et le shield motor
@@ -87,14 +97,39 @@ void setupMoteurs() {
 
 	// initialisation paupière ----------------
 	//Pin rupteurs paupières
-	pinMode(stopHautGauche, INPUT);
-	pinMode(stopHautDroite, INPUT);
-	pinMode(stopBasDroite, INPUT);
-	pinMode(stopBasGauche, INPUT);
-
+	lastMouvementOeil = millis();
+	positionAngleOeilGauche = 0;
+	positionAngleOeilDroit = 0;
 }
 
-void loopMoteurs() {
+void loopServoAngle() {
+	float tempsAvantDernierMouvementAngleOeil = millis() - lastMouvementOeil;
+	// servomoteur --------------------------------------------------------------------
+	if(tempsAvantDernierMouvementAngleOeil > 15)
+	{
+		lastMouvementOeil = millis();
+		if(angleOeilGauche < positionAngleOeilGauche) {
+			float prochainMouvementOeilGauche = positionAngleOeilGauche - 1;
+			servoGauche.write(prochainMouvementOeilGauche);
+		} else if (angleOeilGauche > positionAngleOeilGauche) {
+			float prochainMouvementOeilGauche = positionAngleOeilGauche + 1;
+			servoGauche.write(prochainMouvementOeilGauche);
+		} else if (angleOeilGauche == positionAngleOeilDroit) {
+			;
+		}
+		if(angleOeilDroit < positionAngleOeilDroit) {
+			float prochainMouvementOeilDroit = positionAngleOeilDroit - 1;
+			servoDroit.write(prochainMouvementOeilDroit);
+		} else if (angleOeilDroit > positionAngleOeilDroit) {
+			float prochainMouvementOeilDroit = positionAngleOeilDroit + 1;
+			servoDroit.write(prochainMouvementOeilDroit);
+		} else if (angleOeilGauche == positionAngleOeilDroit) {
+			;
+		}
+	}
+}
+
+void loopEngrenages() {
 	// engrenage ---------------------------------------------------------------------
 	if (activEngrenage) {        //Si engrenage activé
 		if (sensEngrenage == MOTEUR_AVANCE)      // Si sens engrenage = 0 => sens arrière
@@ -108,17 +143,10 @@ void loopMoteurs() {
 		moteurEngrenage->run(RELEASE);
 	}
 
-	int speedEngrenage = map(vitesseEngrenage,0,1,0,255); //map de la vitesse d'une valeur float à une valeur int entre O et 255
-	moteurEngrenage->setSpeed(speedEngrenage);  // envoie de la vitesse au moteur
+	moteurEngrenage->setSpeed(255);  // envoie de la vitesse au moteur
 
-	// servomoteur --------------------------------------------------------------------
-
-	int aG=map(angleOeilGauche,0,1,0,179); //map de la valeur Angle gauche qui est en float => valeur int angle
-	int aD=map(angleOeilDroit,0,1,0,179);   // """"
-
-	servoGauche.write(aG); // Envoie de l'angle aux servos moteurs
-	servoDroit.write(aD);
 }
+
 
 void setupPaupieres() {
 	while(stopHautGauche == HIGH) {
@@ -170,7 +198,9 @@ void loopPaupieres() {
 				Serial.println("Le moteur recule");
 				pourcentageDestination = lastPourcentagePositionOeilGauche - pourcentagePositionPaupiereGauche;
 			}
-			tempsMouvOeilGauche = timeOeilGauche * pourcentagePositionPaupiereGauche;
+			debug = "Pourcentage position pop gauche = ";
+			Serial.println(debug + pourcentageDestination);
+			tempsMouvOeilGauche = timeOeilGauche * pourcentageDestination;
 			timerMouvOeilGauche = millis();
 			debug = "Debut du mouvement de l'oeil gauche ; Temps mouv oeil gauche = ";
 			Serial.println(debug + tempsMouvOeilGauche);
@@ -179,19 +209,20 @@ void loopPaupieres() {
 			paupiereGaucheBouge = true;
 		} else {
 			float tempsPasse = millis() - timerMouvOeilGauche;
-			float pourcentageTempsRestant = 1 - ((tempsMouvOeilGauche - tempsPasse) / tempsMouvOeilGauche);
-			float tempsRestant = tempsMouvOeilGauche - tempsPasse;
-			debug = "Pourcentage temps restant : ";
-			Serial.println(debug + pourcentageTempsRestant);
-			float positionActuelle;
+			//float pourcentageTempsRestant = 1 - ((tempsMouvOeilGauche - tempsPasse) / tempsMouvOeilGauche);
+			//float tempsRestant = tempsMouvOeilGauche - tempsPasse;
+			//debug = "Pourcentage temps restant : ";
+			//Serial.println(debug + pourcentageTempsRestant);
+			//float positionActuelle;
 			if (paupiereGaucheAvance) {
-				positionActuelle = (lastPourcentagePositionOeilGauche + pourcentageTempsRestant);
+				moteurPaupGauche->run(FORWARD);
+				//positionActuelle = (lastPourcentagePositionOeilGauche + pourcentageTempsRestant);
 			}
 			else {
-				positionActuelle = lastPourcentagePositionOeilGauche - pourcentageTempsRestant;
+				moteurPaupGauche->run(BACKWARD);
+				//positionActuelle = lastPourcentagePositionOeilGauche - pourcentageTempsRestant;
 			}
-			debug = "Position actuelle";
-			Serial.println(debug + positionActuelle);
+			Serial.println(tempsPasse);
 			if(tempsPasse >= tempsMouvOeilGauche) {
 				//moteurPaupGauche->run(RELEASE);
 				Serial.println("STOP Oeil Gauche");
@@ -211,7 +242,11 @@ void mockPaupieres() {
 	stopBasGauche = HIGH;
 	GOMoteurGauche = true;
 }
-
+void mockEngrenage() {
+	activEngrenage = true;
+	vitesseEngrenage = 1;
+	sensEngrenage = MOTEUR_AVANCE;
+}
 
 
 

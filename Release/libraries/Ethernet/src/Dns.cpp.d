@@ -12,7 +12,7 @@ libraries/Ethernet/src/Dns.cpp.o: \
  /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Printable.h \
  /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/USBAPI.h \
  /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Arduino.h \
- /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/variants/standard/pins_arduino.h \
+ /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/variants/ethernet/pins_arduino.h \
  /home/nico/Documents/sloeber/arduinoPlugin/libraries/Ethernet/1.1.2/src/EthernetUdp.h \
  /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Udp.h \
  /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Stream.h \
@@ -45,7 +45,7 @@ libraries/Ethernet/src/Dns.cpp.o: \
 
 /home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/cores/arduino/Arduino.h:
 
-/home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/variants/standard/pins_arduino.h:
+/home/nico/Documents/sloeber/arduinoPlugin/packages/arduino/hardware/avr/1.6.18/variants/ethernet/pins_arduino.h:
 
 /home/nico/Documents/sloeber/arduinoPlugin/libraries/Ethernet/1.1.2/src/EthernetUdp.h:
 

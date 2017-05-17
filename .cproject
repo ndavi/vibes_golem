@@ -20,9 +20,9 @@
 							<tool id="io.sloeber.tool.sketch.compiler.cpp.21636696" name="Arduino C++ Compiler" superClass="io.sloeber.tool.sketch.compiler.cpp">
 								<option id="io.sloeber.compiler.cpp.sketch.option.incpath.907194962" name="Include Paths (-I)" superClass="io.sloeber.compiler.cpp.sketch.option.incpath" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/core/core}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libraries/oscWrapper}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libraries/Time}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libraries/Adafruit_Motor_Shield}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/libraries/OSC}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/core/variant}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Servo}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Servo/src}&quot;"/>
@@ -30,10 +30,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Wire/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1270115003" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
 							</tool>
@@ -49,10 +49,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Wire/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1330104808" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
 							</tool>
@@ -68,10 +68,10 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/SPI/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Wire/src}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/WiFi}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/WiFi/src}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/golem_vibes/libraries/Ethernet/src}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.1743340404" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>
 							</tool>
@@ -96,6 +96,10 @@
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/golem_vibes"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

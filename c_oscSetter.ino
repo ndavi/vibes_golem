@@ -1,4 +1,14 @@
-void toggleEngrenage(OSCMessage &msg){
+void toggleEngrenage(OscMessage &msg){
+	Serial.println("Toggle engrenage");
+	if (msg.isInt(0)){
+		int result = msg.getInt(0);
+		if (result == 1)
+			activEngrenage = true;
+		else
+			activEngrenage = false;
+	}
+}
+void toggleEngrenageTest(OscMessage &msg, int test){
 	Serial.println("Toggle engrenage");
 	if (msg.isInt(0)){
 		int result = msg.getInt(0);
@@ -9,7 +19,7 @@ void toggleEngrenage(OSCMessage &msg){
 	}
 }
 
-void changeSensEngrenage(OSCMessage &msg){
+void changeSensEngrenage(OscMessage &msg){
 	Serial.println("Toggle sens engrenage");
 	if (msg.isInt(0)){
 		sensEngrenage = msg.getInt(0);
@@ -18,7 +28,7 @@ void changeSensEngrenage(OSCMessage &msg){
 	}
 }
 
-void changeVitesseEngrenage(OSCMessage &msg){
+void changeVitaesseEngrenage(OscMessage &msg){
 	Serial.println("Changement vitesse engrenage");
 	if (msg.isFloat(0)){
 		vitesseEngrenage = msg.getFloat(0);
@@ -27,25 +37,25 @@ void changeVitesseEngrenage(OSCMessage &msg){
 	}
 }
 
-void changeAngleOeilGauche(OSCMessage &msg){
+void changeAngleOeilGauche(OscMessage &msg){
 	Serial.println("Changement angle oeil gauche");
 	if (msg.isFloat(0)){
-		angleOeilGauche = msg.getFloat(0);
+		angleOeilGauche = map(msg.getFloat(0),0,1,0,180);
 	} else {
 		Serial.println("WARNING : Erreur lors du changement d'angle de l'oeil gauche");
 	}
 }
 
-void changeAngleOeilDroit(OSCMessage &msg){
+void changeAngleOeilDroit(OscMessage &msg){
 	Serial.println("Changement angle oeil droit");
 	if (msg.isFloat(0)){
-		angleOeilDroit = msg.getFloat(0);
+		angleOeilDroit = map(msg.getFloat(0),0,1,0,180);
 	} else {
 		Serial.println("WARNING : Erreur lors du changement d'angle de l'oeil droit");
 	}
 }
 
-void changePositionPaupiereGauche(OSCMessage &msg){
+void changePositionPaupiereGauche(OscMessage &msg){
 	if(!paupiereGaucheBouge) {
 		Serial.println("Changement position paupiere gauche");
 		if (msg.isInt(0)){
@@ -56,7 +66,7 @@ void changePositionPaupiereGauche(OSCMessage &msg){
 	}
 }
 
-void changePositionPaupiereDroite(OSCMessage &msg){
+void changePositionPaupiereDroite(OscMessage &msg){
 	if(!paupiereDroiteBouge) {
 		Serial.println("Changement position paupiere droite");
 		if (msg.isInt(0)){
