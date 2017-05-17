@@ -4,6 +4,7 @@ Servo servoDroit; //décla objet servo oeil droit
 
 int pinServoGauche=9; //décla pin servo gauche !!!! A DEFINIR !!!!
 int pinServoDroit=10; //décla pin servo droit !!!! A DEFINIR !!!!
+String debug;
 
 
 //+++++++++++engrenage+++++++++++
@@ -26,7 +27,6 @@ Adafruit_DCMotor *moteurPaupDroit = shieldMotor.getMotor(3);
 unsigned int localPort = 8888;      // local port to listen for UDP packets
 
 EthernetUDP Udp;
-OscUDP etherOSC;
 
 byte mac[] = {
 		0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // you can find this written on the board of some Arduino Ethernets or shields

@@ -1,11 +1,12 @@
 #include <Servo.h> //impor bibli servoMoteurs
 #include <SPI.h>
-//#include <Ethernet.h>
-//#include <EthernetUdp.h>
+#include <Ethernet.h>
+#include <EthernetUdp.h>
 #include <Wire.h> //communication avec le shield
 #include <Adafruit_MotorShield.h> // !!!! A telecharger + modif en fonction du shield utilisé !!!!
 #include <Time.h>
-#include <OscUDP.h>
+#include <OSCBundle.h>
+#include <OSCBoards.h>
 
 #define MOTEUR_AVANCE 1
 #define MOTEUR_RECULE 0
@@ -15,7 +16,6 @@ void setupReseau() {
 	Serial.println("Connexion au reseau");
 	Ethernet.begin(mac,ip);
 	Udp.begin(localPort);
-	etherOSC.begin(Udp);
 	Serial.println("Reception OSC activee");
 }
 
@@ -56,26 +56,33 @@ void readRupteurs() {
 
 void getOSCMessages() {
 	// wait to see if a reply is available
-	etherOSC.listen();  // if there is data waiting, this will trigger OSC EVENT
-}
-void oscEvent(OscMessage &m) { // *note the & before msg
-	Serial.println("Received message");
-	Serial.println(m.getInt(0));
-	char str[16];
-	m.getAddress(str);
-	Serial.println(str);
-	//ENGRENAGE GOLEM
-	m.route("/tE", toggleEngrenageTest);
-	m.plug("/golem/engrenage/sens", toggleEngrenage);
-	m.plug("/golem/engrenage/vitesse", toggleEngrenage);
-	//ANGLE YEUX
-	m.plug("/golem/oeilGauche/angle", changeAngleOeilGauche);
-	m.plug("/golem/oeilDroit/angle", changeAngleOeilDroit);
+	OSCBundle bundleIN;
+		int size;
+		if((size = Udp.parsePacket())>0) {
 
-	//POSITION YEUX
-	m.plug("/golem/oeilGauche/paupiere", changePositionPaupiereGauche);
-	m.plug("/golem/oeilDroit/paupiere", changePositionPaupiereDroite);
+			while(size--) {
+				bundleIN.fill(Udp.read());
+			}
 
+			if(!bundleIN.hasError()) {
+				//ENGRENAGE GOLEM
+				bundleIN.dispatch("/eT", toggleEngrenage);
+				bundleIN.dispatch("/golem/engrenage/sens", changeSensEngrenage);
+				bundleIN.dispatch("/golem/engrenage/vitesse", changeVitesseEngrenage);
+				//ANGLE YEUX
+				bundleIN.dispatch("/golem/oeilGauche/angle", changeAngleOeilGauche);
+				bundleIN.dispatch("/golem/oeilDroit/angle", changeAngleOeilDroit);
+
+				//POSITION YEUX
+				bundleIN.dispatch("/golem/oeilGauche/paupiere", changePositionPaupiereGauche);
+			bundleIN.dispatch("/golem/oeilDroit/paupiere", changePositionPaupiereDroite);
+
+			}
+			else {
+				OSCErrorCode errorCode = bundleIN.getError();
+				Serial.println(errorCode);
+			}
+	}
 }
 
 void setupMoteurs() {

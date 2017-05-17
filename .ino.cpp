@@ -2,21 +2,23 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2017-05-17 23:30:58
+//This file has been generated on 2017-05-18 00:12:41
 
 #include "Arduino.h"
 #include <Servo.h>
 #include <SPI.h>
+#include <Ethernet.h>
+#include <EthernetUdp.h>
 #include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <Time.h>
-#include <OscUDP.h>
+#include <OSCBundle.h>
+#include <OSCBoards.h>
 void setupReseau() ;
 void setup() ;
 void loop() ;
 void readRupteurs() ;
 void getOSCMessages() ;
-void oscEvent(OscMessage &m) ;
 void setupMoteurs() ;
 void loopServoAngle() ;
 void loopEngrenages() ;
@@ -24,14 +26,13 @@ void setupPaupieres() ;
 void loopPaupieres() ;
 void mockPaupieres() ;
 void mockEngrenage() ;
-void toggleEngrenage(OscMessage &msg);
-void toggleEngrenageTest(OscMessage &msg, int test);
-void changeSensEngrenage(OscMessage &msg);
-void changeVitaesseEngrenage(OscMessage &msg);
-void changeAngleOeilGauche(OscMessage &msg);
-void changeAngleOeilDroit(OscMessage &msg);
-void changePositionPaupiereGauche(OscMessage &msg);
-void changePositionPaupiereDroite(OscMessage &msg);
+void toggleEngrenage(OSCMessage &msg);
+void changeSensEngrenage(OSCMessage &msg);
+void changeVitesseEngrenage(OSCMessage &msg);
+void changeAngleOeilGauche(OSCMessage &msg);
+void changeAngleOeilDroit(OSCMessage &msg);
+void changePositionPaupiereGauche(OSCMessage &msg);
+void changePositionPaupiereDroite(OSCMessage &msg);
 
 
 #include "a_variables.ino"
