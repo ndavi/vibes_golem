@@ -47,24 +47,32 @@ void changeAngleOeilDroit(OSCMessage &msg){
 	}
 }
 
-void changePositionPaupiereGauche(OSCMessage &msg){
-	if(!paupiereGaucheBouge) {
-		Serial.println("Changement position paupiere gauche");
-		if (msg.isInt(0)){
-			pourcentagePositionPaupiereGauche = msg.getInt(0) / 100;
-		} else {
-			Serial.println("WARNING : Erreur lors du changement d'angle de position paupiere gauche");
-		}
-	}
+void changePositionPaupiereGauche0(OSCMessage &msg){
+	Serial.println("Changement position paupiere gauche to 0");
+	pourcentagePositionPaupiereGauche = 0;
+}
+void changePositionPaupiereGauche25(OSCMessage &msg){
+	Serial.println("Changement position paupiere gauche to 25");
+	pourcentagePositionPaupiereGauche = 0.25;
+}void changePositionPaupiereGauche50(OSCMessage &msg){
+	Serial.println("Changement position paupiere gauche to 50");
+	pourcentagePositionPaupiereGauche = 0.50;
+}void changePositionPaupiereGauche75(OSCMessage &msg){
+	Serial.println("Changement position paupiere gauche to 75");
+	pourcentagePositionPaupiereGauche = 0.75;
 }
 
-void changePositionPaupiereDroite(OSCMessage &msg){
-	if(!paupiereDroiteBouge) {
-		Serial.println("Changement position paupiere droite");
-		if (msg.isInt(0)){
-			pourcentagePositionPaupiereDroite = msg.getInt(0) / 100;
-		} else {
-			Serial.println("WARNING : Erreur lors du changement de position paupiere droite");
-		}
-	}
+void changePositionPaupiereDroite0(OSCMessage &msg){
+	Serial.println("Changement position paupiere droite to 0");
+	pourcentagePositionPaupiereDroite = 0;
+}
+void changePositionPaupiereDroite25(OSCMessage &msg){
+	Serial.println("Changement position paupiere droite to 25");
+	pourcentagePositionPaupiereDroite = 0.25;
+}void changePositionPaupiereDroite50(OSCMessage &msg){
+	Serial.println("Changement position paupiere droite to 50");
+	pourcentagePositionPaupiereDroite = 0.50;
+}void changePositionPaupiereDroite75(OSCMessage &msg){
+	Serial.println("Changement position paupiere droite to 75");
+	pourcentagePositionPaupiereDroite = 0.75;
 }

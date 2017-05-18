@@ -74,8 +74,16 @@ void getOSCMessages() {
 				bundleIN.dispatch("/golem/oeilDroit/angle", changeAngleOeilDroit);
 
 				//POSITION YEUX
-				bundleIN.dispatch("/golem/oeilGauche/paupiere", changePositionPaupiereGauche);
-			bundleIN.dispatch("/golem/oeilDroit/paupiere", changePositionPaupiereDroite);
+				bundleIN.dispatch("/golem/oeilGauche/paupiereAt0", changePositionPaupiereGauche0);
+				bundleIN.dispatch("/golem/oeilGauche/paupiereAt25", changePositionPaupiereGauche25);
+				bundleIN.dispatch("/golem/oeilGauche/paupiereAt50", changePositionPaupiereGauche50);
+				bundleIN.dispatch("/golem/oeilGauche/paupiereAt75", changePositionPaupiereGauche75);
+
+				bundleIN.dispatch("/golem/oeilDroit/paupiereAt0", changePositionPaupiereDroite0);
+				bundleIN.dispatch("/golem/oeilDroit/paupiereAt25", changePositionPaupiereDroite25);
+				bundleIN.dispatch("/golem/oeilDroit/paupiereAt50", changePositionPaupiereDroite50);
+				bundleIN.dispatch("/golem/oeilDroit/paupiereAt75", changePositionPaupiereDroite75);
+
 
 			}
 			else {
