@@ -1,6 +1,6 @@
 
-Servo servoGauche; //décla objet servo oeil gauche
-Servo servoDroit; //décla objet servo oeil droit
+//Servo servoGauche; //décla objet servo oeil gauche
+//Servo servoDroit; //décla objet servo oeil droit
 
 int pinServoGauche=9; //décla pin servo gauche !!!! A DEFINIR !!!!
 int pinServoDroit=10; //décla pin servo droit !!!! A DEFINIR !!!!
@@ -15,8 +15,8 @@ Adafruit_DCMotor *moteurEngrenage = shieldMotor.getMotor(1);
 
 //++++++++++++paupiere+++++++++++++
 
-Adafruit_DCMotor *moteurPaupGauche = shieldMotor.getMotor(2);
-Adafruit_DCMotor *moteurPaupDroit = shieldMotor.getMotor(3);
+Adafruit_DCMotor *moteurPaupGauche = shieldMotor.getMotor(3);
+Adafruit_DCMotor *moteurPaupDroit = shieldMotor.getMotor(2);
 
 
 
@@ -33,6 +33,8 @@ byte mac[] = {
 
 //the Arduino's IP
 IPAddress ip(192, 168, 0, 155);
+IPAddress remote;
+int remotePort = 7376;
 
 
 //Variable OSC
@@ -52,16 +54,13 @@ float lastMouvementOeil = 0;
 //On défini les variables des microrupteurs
 
 int pinSHG = 3; // pin microrupteur haut gauche !!!!! A DEFINIR !!!!!
-int stopHautGauche = 1; //signal Microrupteur haut gauche
+int stopHaut[] = {1, 1}; //signal Microrupteur haut gauche
 
 int pinSBG = 4; //pin microrupteur bas gauche  !!!!! A DEFINIR !!!!!!
-int stopBasGauche = 1; //signal microrupteur bas droit
+int stopBas[] = {1 ,1}; //signal microrupteur bas droit
 
 int pinSHD = 7; //pin microrupteur haut droit !!!!! A DEFINIR !!!!!
-int stopHautDroite = 1; //signal microrupteur haut droit
-
 int pinSBD = 8; //pin microrupteur bas droit !!!!! A DEFINIR !!!!!
-int stopBasDroite = 1; //signal microrupteur bas droit
 
 
 
@@ -71,19 +70,19 @@ int stopBasDroite = 1; //signal microrupteur bas droit
 bool setupFinished = false;
 
 //Temps que mettent les moteurs à faire un aller
-unsigned long timeOeilGauche;
-unsigned long timeOeilGaucheInverse;
+unsigned long timeOeilGauche[] = {0,0};
+unsigned long timeOeilGaucheInverse[] = {0,0};
 unsigned long timeOeilDroit;
 unsigned long timeOeilDroitInverse;
 
 
-float pourcentagePositionPaupiereGauche = 0;
-float lastPourcentagePositionOeilGauche = 0;
-bool paupiereGaucheBouge = false;
-unsigned long tempsMouvOeilGauche = 0;
-unsigned long timerMouvOeilGauche = 0;
-bool GOMoteurGauche = false;
-bool paupiereGaucheAvance = true;
+float pourcentagePositionPaupiereGauche[] = {0,0};
+float lastPourcentagePositionOeilGauche[] = {0,0};
+bool paupiereGaucheBouge[] = {false, false};
+unsigned long tempsMouvOeilGauche[] = {0,0};
+unsigned long timerMouvOeilGauche[] = {0,0};
+bool GOMoteurGauche[] = {false,false};
+bool paupiereGaucheAvance[] = {true, true};
 
 float pourcentagePositionPaupiereDroite = 0;
 float lastPourcentagePositionOeilDroit = 0;
