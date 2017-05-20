@@ -1,13 +1,11 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetUdp.h>
-#include <Wire.h> //communication avec le shield
-#include <Adafruit_MotorShield.h> // !!!! A telecharger + modif en fonction du shield utilisé !!!!
+#include <Wire.h>
+#include <Adafruit_MotorShield.h>
 
 #define MOTEUR_AVANCE 1
 #define MOTEUR_RECULE 0
-
-char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  //buffer to hold incoming packet,
 
 
 void setupReseau() {
@@ -75,7 +73,7 @@ void receiveUDP() {
 }
 
 void sendPacket(byte bytes[]) {
-	// send a reply to the IP address and port that sent us the packet we received
+	// send a reply to the IP address that sended us the first udp packet on the selected port in config
 	if(remote) {
 		Udp.beginPacket(remote, remotePort);
 		Udp.write(bytes,4);
@@ -90,37 +88,6 @@ void readRupteurs() {
 	stopBas[1] = digitalRead(pinSHD);
 	byte packet[] = {stopHaut[0],stopBas[0],stopHaut[1],stopBas[1]};
 	sendPacket(packet);
-
-
-	// send a reply to the IP address and port that sent us the packet we received
-	//	if(stopHaut[0] == HIGH) {
-	//		byte packet[] = {1,0,0,0};
-	//		sendPacket(packet);
-	//	} else {
-	//		byte packet[] = {0,0,0,0};
-	//		sendPacket(packet);
-	//	}
-	//	if(stopBas[0] == HIGH) {
-	//		byte packet[] = {0,1,0,0};
-	//		sendPacket(packet);
-	//	} else {
-	//		byte packet[] = {0,0,0,0};
-	//		sendPacket(packet);
-	//	}
-	//	if(stopHaut[1] == HIGH) {
-	//		byte packet[] = {0,0,1,0};
-	//		sendPacket(packet);
-	//	} else {
-	//		byte packet[] = {0,0,0,0};
-	//		sendPacket(packet);
-	//	}
-	//	if(stopBas[1] == HIGH) {
-	//		byte packet[] = {0,0,0,1};
-	//		sendPacket(packet);
-	//	} else {
-	//		byte packet[] = {0,0,0,0};
-	//		sendPacket(packet);
-	//	}
 
 }
 
@@ -201,14 +168,13 @@ void setupPaupieres() {
 	while(stopHaut[0] == HIGH) {
 		moteurPaupGauche->run(BACKWARD);
 		readRupteurs();
-		delay(30);
+		delay(15);
 	}
-	Serial.println("STOP HAUT ACTIVE");
 	timeOeilGauche[0] = millis();
 	while(stopBas[0] == HIGH) {
 		moteurPaupGauche->run(FORWARD);
 		readRupteurs();
-		delay(30);
+		delay(15);
 	}
 	timeOeilGauche[0] = millis() - timeOeilGauche[0];
 	Serial.println("Temps aller paupiere gauche : ");
@@ -218,7 +184,7 @@ void setupPaupieres() {
 	while(stopHaut[0] == HIGH) {
 		moteurPaupGauche->run(BACKWARD);
 		readRupteurs();
-		delay(30);
+		delay(15);
 	}
 	timeOeilGaucheInverse[0] = millis() - timeOeilGaucheInverse[0];
 	Serial.println("Temps retour paupiere gauche : ");
@@ -230,14 +196,14 @@ void setupPaupieres() {
 	while(stopHaut[1] == HIGH) {
 		moteurPaupDroit->run(BACKWARD);
 		readRupteurs();
-		delay(30);
+		delay(15);
 	}
 	timeOeilGauche[1] = millis();
 
 	while(stopBas[1] == HIGH) {
 		moteurPaupDroit->run(FORWARD);
 		readRupteurs();
-		delay(30);
+		delay(15);
 	}
 	timeOeilGauche[1] = millis() - timeOeilGauche[1];
 	Serial.println("Temps aller paupiere droite : ");
@@ -247,7 +213,7 @@ void setupPaupieres() {
 	while(stopHaut[1] == HIGH) {
 		moteurPaupDroit->run(BACKWARD);
 		readRupteurs();
-		delay(30);
+		delay(15);
 	}
 	moteurPaupDroit->run(RELEASE);
 	moteurPaupDroit->setSpeed(0);
@@ -352,100 +318,6 @@ void loopPaupieres() {
 				}
 			}
 		}
-	}
-}
-
-void mockPaupieres() {
-	pourcentagePositionPaupiereGauche[0] = 0.7;
-	lastPourcentagePositionOeilGauche[0] = 0.2;
-	pourcentagePositionPaupiereGauche[1] = 0.7;
-	lastPourcentagePositionOeilGauche[1] = 0.2;
-	timeOeilGauche[0] = 5000;
-	timeOeilGauche[1] = 5000;
-	setupFinished = true;
-	stopHaut[0] = HIGH;
-	stopBas[0] = HIGH;
-	stopHaut[1] = HIGH;
-	stopBas[1] = HIGH;
-
-	GOMoteurGauche[0] = true;
-	GOMoteurGauche[1] = true;
-
-}
-void mockEngrenage() {
-	activEngrenage = true;
-	vitesseEngrenage = 1;
-	sensEngrenage = MOTEUR_AVANCE;
-}
-void changePositionPaupiereGaucheZero(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 0");
-		pourcentagePositionPaupiereGauche[0] = 0;
-	}
-}
-void changePositionPaupiereGaucheVinCinq(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 25");
-		pourcentagePositionPaupiereGauche[0] = 0.25;
-	}
-}
-void changePositionPaupiereGaucheCinquante(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 50");
-		pourcentagePositionPaupiereGauche[0] = 0.50;
-	}
-}
-void changePositionPaupiereGaucheSoixanteQuinze(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 75");
-		pourcentagePositionPaupiereGauche[0] = 0.75;
-	}
-}
-void changePositionPaupiereGaucheCent(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 100");
-		pourcentagePositionPaupiereGauche[0] = 1;
-	}
-}
-
-void changePositionPaupiereDroiteZero(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 0");
-		pourcentagePositionPaupiereGauche[1] = 0;
-	}
-}
-void changePositionPaupiereDroiteVinCinq(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 25");
-		pourcentagePositionPaupiereGauche[1] = 0.25;
-	}
-}
-void changePositionPaupiereDroiteCinquante(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 50");
-		pourcentagePositionPaupiereGauche[1] = 0.50;
-	}
-}
-void changePositionPaupiereDroiteSoixanteQuinze(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 75");
-		pourcentagePositionPaupiereGauche[1] = 0.75;
-	}
-}
-void changePositionPaupiereDroiteCent(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 100");
-		pourcentagePositionPaupiereGauche[1] = 1;
 	}
 }
 
