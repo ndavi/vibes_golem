@@ -46,96 +46,28 @@
 //		Serial.println("WARNING : Erreur lors du changement d'angle de l'oeil droit");
 //	}
 //}
-void changePositionPaupiereGaucheZero(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 0");
-		pourcentagePositionPaupiereGauche[0] = 0;
+void changePositionPaupiere(int numMotor, String sens){
+	if(sens == "AVANCE") {
+		paupiereGaucheAvance[numMotor] = true;
+	} else if (sens == "RECULE") {
+		paupiereGaucheAvance[numMotor] = false;
+	}
+	if(!GOMoteurGauche[numMotor]) {
+		GOMoteurGauche[numMotor] = true;
 	}
 }
-void changePositionPaupiereGaucheVinCinq(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 25");
-		pourcentagePositionPaupiereGauche[0] = 0.25;
+void toggleEngrenage(bool run) {
+	if(run) {
+		activEngrenage = true;
+	} else {
+		activEngrenage = false;
 	}
 }
-void changePositionPaupiereGaucheCinquante(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 50");
-		pourcentagePositionPaupiereGauche[0] = 0.50;
+void changeSensEngrenage(bool avance) {
+	if(avance) {
+		engrenageAvance = true;
+	} else {
+		engrenageAvance = false;
 	}
-}
-void changePositionPaupiereGaucheSoixanteQuinze(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 75");
-		pourcentagePositionPaupiereGauche[0] = 0.75;
-	}
-}
-void changePositionPaupiereGaucheCent(){
-	if(!GOMoteurGauche[0]) {
-		GOMoteurGauche[0] = true;
-		Serial.println("Changement position paupiere gauche to 100");
-		pourcentagePositionPaupiereGauche[0] = 1;
-	}
-}
 
-void changePositionPaupiereDroiteZero(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 0");
-		pourcentagePositionPaupiereGauche[1] = 0;
-	}
-}
-void changePositionPaupiereDroiteVinCinq(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 25");
-		pourcentagePositionPaupiereGauche[1] = 0.25;
-	}
-}
-void changePositionPaupiereDroiteCinquante(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 50");
-		pourcentagePositionPaupiereGauche[1] = 0.50;
-	}
-}
-void changePositionPaupiereDroiteSoixanteQuinze(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 75");
-		pourcentagePositionPaupiereGauche[1] = 0.75;
-	}
-}
-void changePositionPaupiereDroiteCent(){
-	if(!GOMoteurGauche[1]) {
-		GOMoteurGauche[1] = true;
-		Serial.println("Changement position paupiere droite to 100");
-		pourcentagePositionPaupiereGauche[1] = 1;
-	}
-}
-void mockPaupieres() {
-	pourcentagePositionPaupiereGauche[0] = 0.7;
-	lastPourcentagePositionOeilGauche[0] = 0.2;
-	pourcentagePositionPaupiereGauche[1] = 0.7;
-	lastPourcentagePositionOeilGauche[1] = 0.2;
-	timeOeilGauche[0] = 5000;
-	timeOeilGauche[1] = 5000;
-	setupFinished = true;
-	stopHaut[0] = HIGH;
-	stopBas[0] = HIGH;
-	stopHaut[1] = HIGH;
-	stopBas[1] = HIGH;
-
-	GOMoteurGauche[0] = true;
-	GOMoteurGauche[1] = true;
-
-}
-void mockEngrenage() {
-	activEngrenage = true;
-	vitesseEngrenage = 1;
-	sensEngrenage = MOTEUR_AVANCE;
 }

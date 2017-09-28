@@ -14,7 +14,6 @@ void setupReseau() {
 	Udp.begin(localPort);
 	// print Arduino's IP
 	Serial.println(Ethernet.localIP());
-	Serial.println("Reception OSC activee");
 }
 
 void setup() {
@@ -30,6 +29,7 @@ void loop() {
 	readRupteurs();
 	receiveUDP();
 	loopPaupieres();
+	loopEngrenages();
 }
 
 void receiveUDP() {
@@ -47,27 +47,36 @@ void receiveUDP() {
 			}
 		}
 		if(receivedBytes[0] == 1) {
-			changePositionPaupiereGaucheZero();
+			Serial.println("Oeil gauche recule");
+			changePositionPaupiere(0, "RECULE");
 		} else if(receivedBytes[1] == 1) {
-			changePositionPaupiereGaucheVinCinq();
+			Serial.println("Oeil gauche avance");
+			changePositionPaupiere(0, "AVANCE");
 		} else if(receivedBytes[2] == 1) {
-			changePositionPaupiereGaucheCinquante();
+			Serial.println("Oeil droit recule");
+			changePositionPaupiere(1, "RECULE");
 		} else if(receivedBytes[3] == 1) {
-			changePositionPaupiereGaucheSoixanteQuinze();
-		} else if(receivedBytes[4] == 1) {
-			changePositionPaupiereGaucheCent();
-		} else if(receivedBytes[5] == 1) {
-			changePositionPaupiereDroiteZero();
-		} else if(receivedBytes[6] == 1) {
-			changePositionPaupiereDroiteVinCinq();
-		} else if(receivedBytes[7] == 1) {
-			changePositionPaupiereDroiteCinquante();
-		} else if(receivedBytes[8] == 1) {
-			changePositionPaupiereDroiteSoixanteQuinze();
-		} else if(receivedBytes[9] == 1) {
-			changePositionPaupiereDroiteCent();
-		} else if(receivedBytes[10] == 1) {
-			asm volatile ("  jmp 0");
+			Serial.println("Oeil droit avance");
+			changePositionPaupiere(1, "AVANCE");
+		} else if (receivedBytes[4] == 0 && receivedBytes[5] == 0) {
+			Serial.println("Engrenage desactive");
+			toggleEngrenage(false);
+		}
+		else if(receivedBytes[4] == 1) {
+			Serial.println("Engrenage avance");
+			toggleEngrenage(true);
+			changeSensEngrenage(true);
+		}  else if(receivedBytes[5] == 1) {
+			Serial.println("Engrenage recule");
+			toggleEngrenage(true);
+			changeSensEngrenage(false);
+		}
+		else if(receivedBytes[6] == 1) {
+			Serial.println("Stop");
+			GOMoteurGauche[0] = false;
+			GOMoteurGauche[1] = false;
+			toggleEngrenage(false);
+			//asm volatile ("  jmp 0");
 		}
 	}
 }
@@ -86,14 +95,17 @@ void readRupteurs() {
 	stopBas[0] = digitalRead(pinSHG);
 	stopHaut[1] = digitalRead(pinSBD);
 	stopBas[1] = digitalRead(pinSHD);
-	byte packet[] = {stopHaut[0],stopBas[0],stopHaut[1],stopBas[1]};
-	sendPacket(packet);
+	Serial.println(String(stopHaut[0]) + String(stopHaut[1]));
+	Serial.println(String(stopBas[0]) + String(stopBas[1]));
+	//byte packet[] = {stopHaut[0],stopBas[0],stopHaut[1],stopBas[1]};
+	//sendPacket(packet);
 
 }
 
 void setupMoteurs() {
 	Serial.println("Initialisation des moteurs");
 	shieldMotor.begin();
+	moteurEngrenage->setSpeed(255);
 	//ServoMoteurs
 	//servoGauche.attach(pinServoGauche, 900, 2100); //mode output servo gauche
 	//servoDroit.attach(pinServoDroit, 900, 2100); //mode output servo gauche
@@ -107,160 +119,60 @@ void setupMoteurs() {
 	pinMode(pinSHD, INPUT);
 	pinMode(pinSBD, INPUT);
 
-
-	// initialisation paupière ----------------
-	//Pin rupteurs paupières
-	lastMouvementOeil = millis();
-	positionAngleOeilGauche = 0;
-	positionAngleOeilDroit = 0;
+	//Initialisation moteur engrenage
 }
-
-//void loopServoAngle() {
-//	float tempsAvantDernierMouvementAngleOeil = millis() - lastMouvementOeil;
-//	// servomoteur --------------------------------------------------------------------
-//	if(tempsAvantDernierMouvementAngleOeil > 15)
-//	{
-//		lastMouvementOeil = millis();
-//		if(angleOeilGauche < positionAngleOeilGauche) {
-//			float prochainMouvementOeilGauche = positionAngleOeilGauche - 1;
-//			servoGauche.write(prochainMouvementOeilGauche);
-//		} else if (angleOeilGauche > positionAngleOeilGauche) {
-//			float prochainMouvementOeilGauche = positionAngleOeilGauche + 1;
-//			servoGauche.write(prochainMouvementOeilGauche);
-//		} else if (angleOeilGauche == positionAngleOeilDroit) {
-//			;
-//		}
-//		if(angleOeilDroit < positionAngleOeilDroit) {
-//			float prochainMouvementOeilDroit = positionAngleOeilDroit - 1;
-//			servoDroit.write(prochainMouvementOeilDroit);
-//		} else if (angleOeilDroit > positionAngleOeilDroit) {
-//			float prochainMouvementOeilDroit = positionAngleOeilDroit + 1;
-//			servoDroit.write(prochainMouvementOeilDroit);
-//		} else if (angleOeilGauche == positionAngleOeilDroit) {
-//			;
-//		}
-//	}
-//}
 
 void loopEngrenages() {
 	// engrenage ---------------------------------------------------------------------
-	if (activEngrenage) {        //Si engrenage activé
-		if (sensEngrenage == MOTEUR_AVANCE)      // Si sens engrenage = 0 => sens arrière
-			moteurEngrenage->run(FORWARD);
-		else if (sensEngrenage == MOTEUR_RECULE)                          // sinon sens avant
-			moteurEngrenage->run(BACKWARD);
-		else
-			moteurEngrenage->run(RELEASE);
+	if (activEngrenage) {
+		if(engrenageAvance) {
+			moteurPaupDroit->run(FORWARD);
+		} else {
+			moteurPaupDroit->run(BACKWARD);
+		}
+		//Si engrenage activé
 	}
-	else {                             // Si engrenage désactivé => stop
-		moteurEngrenage->run(RELEASE);
+	else {
+		moteurPaupDroit->run(RELEASE);// Si engrenage désactivé => stop
 	}
-
-	moteurEngrenage->setSpeed(255);  // envoie de la vitesse au moteur
-
 }
 
 
 void setupPaupieres() {
-	Serial.println("Debut du setup paupiere");
+	Serial.println("Debut du setup paupiere gauche");
 	moteurPaupGauche->setSpeed(255);
-	moteurPaupDroit->setSpeed(255);
 	while(stopHaut[0] == HIGH) {
+		Serial.println(stopHaut[0]);
+		Serial.println("Go paupiere gauche");
 		moteurPaupGauche->run(BACKWARD);
 		readRupteurs();
 		delay(15);
 	}
-	timeOeilGauche[0] = millis();
-	while(stopBas[0] == HIGH) {
-		moteurPaupGauche->run(FORWARD);
-		readRupteurs();
-		delay(15);
-	}
-	timeOeilGauche[0] = millis() - timeOeilGauche[0];
-	Serial.println("Temps aller paupiere gauche : ");
-	Serial.print(timeOeilGauche[0]);
-	timeOeilGaucheInverse[0] = millis();
-
-	while(stopHaut[0] == HIGH) {
-		moteurPaupGauche->run(BACKWARD);
-		readRupteurs();
-		delay(15);
-	}
-	timeOeilGaucheInverse[0] = millis() - timeOeilGaucheInverse[0];
-	Serial.println("Temps retour paupiere gauche : ");
-	Serial.print(timeOeilGaucheInverse[0]);
 	moteurPaupGauche->run(RELEASE);
 	moteurPaupGauche->setSpeed(0);
-
 	Serial.println("Debut du setup paupiere droite");
+	moteurPaupDroit->setSpeed(255);
 	while(stopHaut[1] == HIGH) {
-		moteurPaupDroit->run(BACKWARD);
-		readRupteurs();
-		delay(15);
-	}
-	timeOeilGauche[1] = millis();
-
-	while(stopBas[1] == HIGH) {
-		moteurPaupDroit->run(FORWARD);
-		readRupteurs();
-		delay(15);
-	}
-	timeOeilGauche[1] = millis() - timeOeilGauche[1];
-	Serial.println("Temps aller paupiere droite : ");
-	Serial.print(timeOeilGauche[1]);
-
-	timeOeilGaucheInverse[1] = millis();
-	while(stopHaut[1] == HIGH) {
+		Serial.println("Go paupiere droite");
 		moteurPaupDroit->run(BACKWARD);
 		readRupteurs();
 		delay(15);
 	}
 	moteurPaupDroit->run(RELEASE);
 	moteurPaupDroit->setSpeed(0);
-	timeOeilGaucheInverse[1] = millis() - timeOeilGaucheInverse[1];
-	Serial.println("Temps retour paupiere droite : ");
-	Serial.print(timeOeilGaucheInverse[1]);
-
 	Serial.println("Setup termine");
 
 	setupFinished = true;
 }
 
 void loopPaupieres() {
+	while(!setupFinished) {
+		delay(15);
+	}
 	for (int i=0; i <= 1; i++) {
-		if(setupFinished && GOMoteurGauche[i]) {
-			if(!paupiereGaucheBouge[i]) {
-				moteurPaupGauche->run(RELEASE);
-				moteurPaupDroit->setSpeed(0);
-				float pourcentageDestination = 0;
-				if(lastPourcentagePositionOeilGauche[i] < pourcentagePositionPaupiereGauche[i])
-				{
-					paupiereGaucheAvance[i] = true;
-					pourcentageDestination = pourcentagePositionPaupiereGauche[i] - lastPourcentagePositionOeilGauche[i];
-				}
-				else {
-					paupiereGaucheAvance[i] = false;
-					pourcentageDestination = lastPourcentagePositionOeilGauche[i] - pourcentagePositionPaupiereGauche[i];
-				}
-				if(paupiereGaucheAvance[i]){
-					tempsMouvOeilGauche[i] = timeOeilGauche[i] * pourcentageDestination;
-				} else {
-					tempsMouvOeilGauche[i] = timeOeilGaucheInverse[i] * pourcentageDestination;
-				}
-				timerMouvOeilGauche[i] = millis();
-				//debug = "Debut du mouvement de l'oeil  ; Temps mouv oeil gauche = ";
-				//Serial.println(debug + tempsMouvOeilGauche[i]);
-				//debug = "Pourcentage destination : ";
-				//Serial.println(debug + pourcentageDestination);
-				paupiereGaucheBouge[i] = true;
-			} else {
-				float tempsPasse = millis() - timerMouvOeilGauche[i];
-				//float pourcentageTempsRestant = 1 - ((tempsMouvOeilGauche - tempsPasse) / tempsMouvOeilGauche);
-				//float tempsRestant = tempsMouvOeilGauche - tempsPasse;
-				//debug = "Pourcentage temps restant : ";
-				//Serial.println(debug + pourcentageTempsRestant);
-				//float positionActuelle;
-				if (paupiereGaucheAvance[i]) {
+		if(GOMoteurGauche[i]) {
+			if (paupiereGaucheAvance[i]) {
+				if(stopBas[i] == HIGH) {
 					if(i == 0) {
 						moteurPaupGauche->setSpeed(255);
 						moteurPaupGauche->run(FORWARD);
@@ -269,56 +181,43 @@ void loopPaupieres() {
 						moteurPaupDroit->setSpeed(255);
 						moteurPaupDroit->run(FORWARD);
 					}
+				} else {
+					GOMoteurGauche[i] = false;
 				}
-				//positionActuelle = (lastPourcentagePositionOeilGauche + pourcentageTempsRestant);
-				else {
+			}
+			else { // La paupiere recule
+				if(stopHaut[i] == HIGH) {
 					if(i == 0) {
 						moteurPaupGauche->setSpeed(255);
 						moteurPaupGauche->run(BACKWARD);
 					} else if (i == 1) {
 						moteurPaupDroit->run(BACKWARD);
 						moteurPaupDroit->setSpeed(255);
-					}				//positionActuelle = lastPourcentagePositionOeilGauche - pourcentageTempsRestant;
-				}
-				if(tempsPasse >= tempsMouvOeilGauche[i]) {
-					if(i == 0) {
-						moteurPaupGauche->run(RELEASE);
-						moteurPaupGauche->setSpeed(0);
-
-					} else if (i == 1) {
-						moteurPaupDroit->run(RELEASE);
-						moteurPaupDroit->setSpeed(0);
-
 					}
-					//Serial.println("STOP Oeil Gauche");
-					//Serial.println(i);
-					paupiereGaucheBouge[i] = false;
+				}  else {
 					GOMoteurGauche[i] = false;
-					lastPourcentagePositionOeilGauche[i] = pourcentagePositionPaupiereGauche[i];
 				}
 			}
-		} else if (GOMoteurGauche[i] == false) {
-			//TODO : Revoir la logique d'erreur des pins
-			if(stopBas[i] == LOW) {
-				if(i == 0) {
-					moteurPaupGauche->run(RELEASE);
-					moteurPaupGauche->setSpeed(0);
-				} else if (i == 1) {
-					moteurPaupDroit->run(RELEASE);
-					moteurPaupDroit->setSpeed(0);
-				}
-			} else if (stopHaut[i] == LOW) {
-				if(i == 0) {
-					moteurPaupGauche->run(RELEASE);
-					moteurPaupGauche->setSpeed(0);
-				} else if (i == 1) {
-					moteurPaupDroit->run(RELEASE);
-					moteurPaupDroit->setSpeed(0);
-
-				}
+		} else if (!GOMoteurGauche[i]) {
+			if(i == 0) {
+				moteurPaupGauche->run(RELEASE);
+				moteurPaupGauche->setSpeed(0);
+			} else if (i == 1) {
+				moteurPaupDroit->run(RELEASE);
+				moteurPaupDroit->setSpeed(0);
 			}
 		}
 	}
+}
+
+unsigned long BtoI(int start, int numofbits, int bits[]){    //binary array to integer conversion
+	unsigned long integer=0;
+	unsigned long mask=1;
+	for (int i = numofbits+start-1; i >= start; i--) {
+		if (bits[i]) integer |= mask;
+		mask = mask << 1;
+	}
+	return integer;
 }
 
 

@@ -1,20 +1,18 @@
 
 //Servo servoGauche; //décla objet servo oeil gauche
 //Servo servoDroit; //décla objet servo oeil droit
-
 int pinServoGauche=9; //décla pin servo gauche !!!! A DEFINIR !!!!
 int pinServoDroit=10; //décla pin servo droit !!!! A DEFINIR !!!!
 String debug;
 
-
 //+++++++++++engrenage+++++++++++
+
 // !!!!!! VALABLE UNIQUEMENT SI SHIELD ADAFRUIT !!!!!!!!
 
 Adafruit_MotorShield shieldMotor = Adafruit_MotorShield();
-Adafruit_DCMotor *moteurEngrenage = shieldMotor.getMotor(1);
 
 //++++++++++++paupiere+++++++++++++
-
+Adafruit_DCMotor *moteurEngrenage = shieldMotor.getMotor(1);
 Adafruit_DCMotor *moteurPaupGauche = shieldMotor.getMotor(3);
 Adafruit_DCMotor *moteurPaupDroit = shieldMotor.getMotor(2);
 
@@ -38,15 +36,8 @@ int remotePort = 7376;
 
 
 //Variable OSC
-bool activEngrenage = false; //VALEUR OSC ACTIV ENGRENAGE; // Valeur OSC à recup ( int )
-int sensEngrenage = 0; //Valeur OSC SENS ENGRENAGE, // Valeur OSC à recup ( int )
-float vitesseEngrenage = 0; //Valeur OSC VITTESSE ENGRENAGE //Valeur OSC à recup ( float )
-
-float angleOeilGauche = 0; //VALEUR OSC A RECUP; //Valeur OSC Angle oeil gauche en float
-float positionAngleOeilGauche = 0;
-float angleOeilDroit = 0; //Valeur OSC A RECUP; //Valeur OSC angle oeil droit en float
-float positionAngleOeilDroit = 0;
-float lastMouvementOeil = 0;
+bool activEngrenage = false; //VALEUR OSC ACTIV ENGRENAGE; // Valeur OSC à recup ( bool )
+bool engrenageAvance = false;
 
 /////DECLARATION VARIABLES PARTIE PAUPIERES
 
@@ -69,22 +60,7 @@ int pinSBD = 8; //pin microrupteur bas droit !!!!! A DEFINIR !!!!!
 //Setup des paupieres
 bool setupFinished = false;
 
-//Temps que mettent les moteurs à faire un aller
-unsigned long timeOeilGauche[] = {0,0};
-unsigned long timeOeilGaucheInverse[] = {0,0};
-unsigned long timeOeilDroit;
-unsigned long timeOeilDroitInverse;
-
-
-float pourcentagePositionPaupiereGauche[] = {0,0};
-float lastPourcentagePositionOeilGauche[] = {0,0};
 bool paupiereGaucheBouge[] = {false, false};
-unsigned long tempsMouvOeilGauche[] = {0,0};
-unsigned long timerMouvOeilGauche[] = {0,0};
 bool GOMoteurGauche[] = {false,false};
 bool paupiereGaucheAvance[] = {true, true};
-
-float pourcentagePositionPaupiereDroite = 0;
-float lastPourcentagePositionOeilDroit = 0;
-bool paupiereDroiteBouge = false;
 

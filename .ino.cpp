@@ -2,7 +2,7 @@
 //This is a automatic generated file
 //Please do not modify this file
 //If you touch this file your change will be overwritten during the next build
-//This file has been generated on 2017-05-20 17:02:33
+//This file has been generated on 2017-09-28 18:14:44
 
 #include "Arduino.h"
 #include <SPI.h>
@@ -20,18 +20,10 @@ void setupMoteurs() ;
 void loopEngrenages() ;
 void setupPaupieres() ;
 void loopPaupieres() ;
-void changePositionPaupiereGaucheZero();
-void changePositionPaupiereGaucheVinCinq();
-void changePositionPaupiereGaucheCinquante();
-void changePositionPaupiereGaucheSoixanteQuinze();
-void changePositionPaupiereGaucheCent();
-void changePositionPaupiereDroiteZero();
-void changePositionPaupiereDroiteVinCinq();
-void changePositionPaupiereDroiteCinquante();
-void changePositionPaupiereDroiteSoixanteQuinze();
-void changePositionPaupiereDroiteCent();
-void mockPaupieres() ;
-void mockEngrenage() ;
+unsigned long BtoI(int start, int numofbits, int bits[]);
+void changePositionPaupiere(int numMotor, String sens);
+void toggleEngrenage(bool run) ;
+void changeSensEngrenage(bool avance) ;
 
 
 #include "a_variables.ino"
