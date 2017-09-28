@@ -95,8 +95,6 @@ void readRupteurs() {
 	stopBas[0] = digitalRead(pinSHG);
 	stopHaut[1] = digitalRead(pinSBD);
 	stopBas[1] = digitalRead(pinSHD);
-	Serial.println(String(stopHaut[0]) + String(stopHaut[1]));
-	Serial.println(String(stopBas[0]) + String(stopBas[1]));
 	//byte packet[] = {stopHaut[0],stopBas[0],stopHaut[1],stopBas[1]};
 	//sendPacket(packet);
 
@@ -126,34 +124,29 @@ void loopEngrenages() {
 	// engrenage ---------------------------------------------------------------------
 	if (activEngrenage) {
 		if(engrenageAvance) {
-			moteurPaupDroit->run(FORWARD);
+			moteurEngrenage->run(FORWARD);
 		} else {
-			moteurPaupDroit->run(BACKWARD);
+			moteurEngrenage->run(BACKWARD);
 		}
 		//Si engrenage activé
 	}
 	else {
-		moteurPaupDroit->run(RELEASE);// Si engrenage désactivé => stop
+		moteurEngrenage->run(RELEASE);// Si engrenage désactivé => stop
 	}
 }
 
 
 void setupPaupieres() {
-	Serial.println("Debut du setup paupiere gauche");
 	moteurPaupGauche->setSpeed(255);
 	while(stopHaut[0] == HIGH) {
-		Serial.println(stopHaut[0]);
-		Serial.println("Go paupiere gauche");
 		moteurPaupGauche->run(BACKWARD);
 		readRupteurs();
 		delay(15);
 	}
 	moteurPaupGauche->run(RELEASE);
 	moteurPaupGauche->setSpeed(0);
-	Serial.println("Debut du setup paupiere droite");
 	moteurPaupDroit->setSpeed(255);
 	while(stopHaut[1] == HIGH) {
-		Serial.println("Go paupiere droite");
 		moteurPaupDroit->run(BACKWARD);
 		readRupteurs();
 		delay(15);
