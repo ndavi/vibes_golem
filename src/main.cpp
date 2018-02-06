@@ -4,8 +4,6 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
-#include <EthernetUdp.h>
-#include <Wire.h>
 #include <Adafruit_MotorShield.h>
 #include <utility/w5100.h>
 #include <ICMPPing.h>
@@ -15,8 +13,8 @@
 
 //Servo servoGauche; //décla objet servo oeil gauche
 //Servo servoDroit; //décla objet servo oeil droit
-int pinServoGauche=9; //décla pin servo gauche !!!! A DEFINIR !!!!
-int pinServoDroit=10; //décla pin servo droit !!!! A DEFINIR !!!!
+int pinServoGauche = 9; //décla pin servo gauche !!!! A DEFINIR !!!!
+int pinServoDroit = 10; //décla pin servo droit !!!! A DEFINIR !!!!
 
 //+++++++++++engrenage+++++++++++
 
@@ -40,7 +38,8 @@ unsigned int localPort = 8888;      // local port to listen for UDP packets
 EthernetUDP Udp;
 
 byte mac[] = {
-        0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED }; // you can find this written on the board of some Arduino Ethernets or shields
+        0xDE, 0xAD, 0xBE, 0xEF, 0xFE,
+        0xED}; // you can find this written on the board of some Arduino Ethernets or shields
 
 //the Arduino's IP
 IPAddress ip(192, 168, 0, 155);
@@ -61,7 +60,7 @@ int pinSHG = 3; // pin microrupteur haut gauche !!!!! A DEFINIR !!!!!
 int stopHaut[] = {1, 1}; //signal Microrupteur haut gauche
 
 int pinSBG = 4; //pin microrupteur bas gauche  !!!!! A DEFINIR !!!!!!
-int stopBas[] = {1 ,1}; //signal microrupteur bas droit
+int stopBas[] = {1, 1}; //signal microrupteur bas droit
 
 int pinSHD = 7; //pin microrupteur haut droit !!!!! A DEFINIR !!!!!
 int pinSBD = 8; //pin microrupteur bas droit !!!!! A DEFINIR !!!!!
@@ -74,7 +73,7 @@ int pinSBD = 8; //pin microrupteur bas droit !!!!! A DEFINIR !!!!!
 bool setupFinished = false;
 
 bool paupiereGaucheBouge[] = {false, false};
-bool GOMoteurGauche[] = {false,false};
+bool GOMoteurGauche[] = {false, false};
 bool paupiereGaucheAvance[] = {true, true};
 
 
@@ -82,41 +81,43 @@ int led_rouge = A0;
 int led_verte = A1;
 
 EthernetClient client;
-IPAddress pingAddr(192,168,0,1); // ip address to ping
+IPAddress pingAddr(192, 168, 0, 1); // ip address to ping
 unsigned long startTime = 0;
 
-char buffer [256];
+char buffer[256];
 SOCKET pingSocket = 0;
-ICMPPing ping(pingSocket,1);
+ICMPPing ping(pingSocket, 1);
 
 
 void setupReseau() {
     Serial.println("Connexion au reseau");
-    Ethernet.begin(mac,ip);
+    Ethernet.begin(mac, ip);
     Udp.begin(localPort);
     // print Arduino's IP
     Serial.println(Ethernet.localIP());
 }
 
-void changePositionPaupiere(int numMotor, String sens){
-    if(sens == "AVANCE") {
+void changePositionPaupiere(int numMotor, String sens) {
+    if (sens == "AVANCE") {
         paupiereGaucheAvance[numMotor] = true;
     } else if (sens == "RECULE") {
         paupiereGaucheAvance[numMotor] = false;
     }
-    if(!GOMoteurGauche[numMotor]) {
+    if (!GOMoteurGauche[numMotor]) {
         GOMoteurGauche[numMotor] = true;
     }
 }
+
 void toggleEngrenage(bool run) {
-    if(run) {
+    if (run) {
         activEngrenage = true;
     } else {
         activEngrenage = false;
     }
 }
+
 void changeSensEngrenage(bool avance) {
-    if(avance) {
+    if (avance) {
         engrenageAvance = true;
     } else {
         engrenageAvance = false;
@@ -159,7 +160,7 @@ void setupMoteurs() {
 
 void setupPaupieres() {
     moteurPaupGauche->setSpeed(255);
-    while(stopHaut[0] == HIGH) {
+    while (stopHaut[0] == HIGH) {
         moteurPaupGauche->run(BACKWARD);
         readRupteurs();
         delay(15);
@@ -168,7 +169,7 @@ void setupPaupieres() {
     moteurPaupGauche->run(RELEASE);
     moteurPaupGauche->setSpeed(0);
     moteurPaupDroit->setSpeed(255);
-    while(stopHaut[1] == HIGH) {
+    while (stopHaut[1] == HIGH) {
         moteurPaupDroit->run(BACKWARD);
         readRupteurs();
         delay(15);
@@ -183,20 +184,13 @@ void setupPaupieres() {
 void setupLed() {
 
 
-
-
-
-
-
-
     pinMode(A0, OUTPUT);
     pinMode(A1, OUTPUT);
 }
 
 void testReseau() {
     ICMPEchoReply echoReply = ping(pingAddr, 1);
-    if (echoReply.status == SUCCESS)
-    {
+    if (echoReply.status == SUCCESS) {
         digitalWrite(led_verte, LOW);
         digitalWrite(led_rouge, HIGH);
         sprintf(buffer,
@@ -230,44 +224,42 @@ void setup() {
 
 void receiveUDP() {
     int size;
-    if((size = Udp.parsePacket())>0){
-        if(!remote) {
+    if ((size = Udp.parsePacket()) > 0) {
+        if (!remote) {
             remote = Udp.remoteIP();
         }
         int receivedBytes[11];
         int byteIterator = 0;
-        while(size--) {
-            if(byteIterator < 11) {
+        while (size--) {
+            if (byteIterator < 11) {
                 receivedBytes[byteIterator] = Udp.read();
                 byteIterator++;
             }
         }
-        if(receivedBytes[0] == 1) {
+        if (receivedBytes[0] == 1) {
             Serial.println("Oeil gauche recule");
             changePositionPaupiere(0, "RECULE");
-        } else if(receivedBytes[1] == 1) {
+        } else if (receivedBytes[1] == 1) {
             Serial.println("Oeil gauche avance");
             changePositionPaupiere(0, "AVANCE");
-        } else if(receivedBytes[2] == 1) {
+        } else if (receivedBytes[2] == 1) {
             Serial.println("Oeil droit recule");
             changePositionPaupiere(1, "RECULE");
-        } else if(receivedBytes[3] == 1) {
+        } else if (receivedBytes[3] == 1) {
             Serial.println("Oeil droit avance");
             changePositionPaupiere(1, "AVANCE");
         } else if (receivedBytes[4] == 0 && receivedBytes[5] == 0) {
             Serial.println("Engrenage desactive");
             toggleEngrenage(false);
-        }
-        else if(receivedBytes[4] == 1) {
+        } else if (receivedBytes[4] == 1) {
             Serial.println("Engrenage avance");
             toggleEngrenage(true);
             changeSensEngrenage(true);
-        }  else if(receivedBytes[5] == 1) {
+        } else if (receivedBytes[5] == 1) {
             Serial.println("Engrenage recule");
             toggleEngrenage(true);
             changeSensEngrenage(false);
-        }
-        else if(receivedBytes[6] == 1) {
+        } else if (receivedBytes[6] == 1) {
             Serial.println("Stop");
             GOMoteurGauche[0] = false;
             GOMoteurGauche[1] = false;
@@ -278,14 +270,14 @@ void receiveUDP() {
 }
 
 void loopPaupieres() {
-    while(!setupFinished) {
+    while (!setupFinished) {
         delay(15);
     }
-    for (int i=0; i <= 1; i++) {
-        if(GOMoteurGauche[i]) {
+    for (int i = 0; i <= 1; i++) {
+        if (GOMoteurGauche[i]) {
             if (paupiereGaucheAvance[i]) {
-                if(stopBas[i] == HIGH) {
-                    if(i == 0) {
+                if (stopBas[i] == HIGH) {
+                    if (i == 0) {
                         moteurPaupGauche->setSpeed(255);
                         moteurPaupGauche->run(FORWARD);
 
@@ -296,22 +288,21 @@ void loopPaupieres() {
                 } else {
                     GOMoteurGauche[i] = false;
                 }
-            }
-            else { // La paupiere recule
-                if(stopHaut[i] == HIGH) {
-                    if(i == 0) {
+            } else { // La paupiere recule
+                if (stopHaut[i] == HIGH) {
+                    if (i == 0) {
                         moteurPaupGauche->setSpeed(255);
                         moteurPaupGauche->run(BACKWARD);
                     } else if (i == 1) {
                         moteurPaupDroit->run(BACKWARD);
                         moteurPaupDroit->setSpeed(255);
                     }
-                }  else {
+                } else {
                     GOMoteurGauche[i] = false;
                 }
             }
         } else if (!GOMoteurGauche[i]) {
-            if(i == 0) {
+            if (i == 0) {
                 moteurPaupGauche->run(RELEASE);
                 moteurPaupGauche->setSpeed(0);
             } else if (i == 1) {
@@ -325,14 +316,13 @@ void loopPaupieres() {
 void loopEngrenages() {
     // engrenage ---------------------------------------------------------------------
     if (activEngrenage) {
-        if(engrenageAvance) {
+        if (engrenageAvance) {
             moteurEngrenage->run(FORWARD);
         } else {
             moteurEngrenage->run(BACKWARD);
         }
         //Si engrenage activé
-    }
-    else {
+    } else {
         moteurEngrenage->run(RELEASE);// Si engrenage désactivé => stop
     }
 }
@@ -352,18 +342,18 @@ void loop() {
 
 void sendPacket(byte bytes[]) {
     // send a reply to the IP address that sended us the first udp packet on the selected port in config
-    if(remote) {
+    if (remote) {
         Udp.beginPacket(remote, remotePort);
-        Udp.write(bytes,4);
+        Udp.write(bytes, 4);
         Udp.endPacket();
     }
 }
 
 
-unsigned long BtoI(int start, int numofbits, int bits[]){    //binary array to integer conversion
-    unsigned long integer=0;
-    unsigned long mask=1;
-    for (int i = numofbits+start-1; i >= start; i--) {
+unsigned long BtoI(int start, int numofbits, int bits[]) {    //binary array to integer conversion
+    unsigned long integer = 0;
+    unsigned long mask = 1;
+    for (int i = numofbits + start - 1; i >= start; i--) {
         if (bits[i]) integer |= mask;
         mask = mask << 1;
     }
