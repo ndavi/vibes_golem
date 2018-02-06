@@ -17,7 +17,6 @@
 //Servo servoDroit; //décla objet servo oeil droit
 int pinServoGauche=9; //décla pin servo gauche !!!! A DEFINIR !!!!
 int pinServoDroit=10; //décla pin servo droit !!!! A DEFINIR !!!!
-String debug;
 
 //+++++++++++engrenage+++++++++++
 
@@ -79,15 +78,16 @@ bool GOMoteurGauche[] = {false,false};
 bool paupiereGaucheAvance[] = {true, true};
 
 
-int led_rouge = 0;
-int led_verte = 1;
+int led_rouge = A0;
+int led_verte = A1;
+
 EthernetClient client;
 IPAddress pingAddr(192,168,0,1); // ip address to ping
 unsigned long startTime = 0;
 
 char buffer [256];
 SOCKET pingSocket = 0;
-ICMPPing ping(pingSocket, (uint16_t)random(0, 255));
+ICMPPing ping(pingSocket,1);
 
 
 void setupReseau() {
@@ -152,6 +152,8 @@ void setupMoteurs() {
     pinMode(pinSHD, INPUT);
     pinMode(pinSBD, INPUT);
 
+    Serial.println("Engrenage activé");
+
     //Initialisation moteur engrenage
 }
 
@@ -179,19 +181,37 @@ void setupPaupieres() {
 }
 
 void setupLed() {
-    pinMode(led_rouge, OUTPUT);
-    pinMode(led_verte, OUTPUT);
+
+
+
+
+
+
+
+
+    pinMode(A0, OUTPUT);
+    pinMode(A1, OUTPUT);
 }
 
 void testReseau() {
-    ICMPEchoReply echoReply = ping(pingAddr, 4);
+    ICMPEchoReply echoReply = ping(pingAddr, 1);
     if (echoReply.status == SUCCESS)
     {
-        Serial.print("Connecté au routeur");
         digitalWrite(led_verte, LOW);
         digitalWrite(led_rouge, HIGH);
+        sprintf(buffer,
+                "Reply[%d] from: %d.%d.%d.%d: bytes=%d time=%ldms TTL=%d",
+                echoReply.data.seq,
+                echoReply.addr[0],
+                echoReply.addr[1],
+                echoReply.addr[2],
+                echoReply.addr[3],
+                REQ_DATASIZE,
+                millis() - echoReply.data.time,
+                echoReply.ttl);
+        Serial.println(buffer);
     } else {
-        Serial.print("Non connecté au routeur");
+        Serial.println("Non connecté au routeur");
         digitalWrite(led_rouge, LOW);
         digitalWrite(led_verte, HIGH);
     }
@@ -200,12 +220,12 @@ void testReseau() {
 void setup() {
     Serial.begin(9600);
     Serial.println("Serial setup");
-    readRupteurs();
+    //readRupteurs();
     setupMoteurs();
-    setupPaupieres();
+    //setupPaupieres();
     setupReseau();
-    setupLed();
-    testReseau();
+    //setupLed();
+    //testReseau();
 }
 
 void receiveUDP() {
@@ -318,16 +338,15 @@ void loopEngrenages() {
 }
 
 void loop() {
-    unsigned long loopTime = millis() - startTime; //Calculate the time since last time the cycle was completed
+    /*unsigned long loopTime = millis() - startTime; //Calculate the time since last time the cycle was completed
     if (loopTime > 5000) //If time is over 2000 millis, set the startTime to millis so the loop time will be reset to zero
     {
         startTime = millis();
         testReseau();
     }
-    testReseau();
-    readRupteurs();
+    readRupteurs();*/
     receiveUDP();
-    loopPaupieres();
+    //loopPaupieres();
     loopEngrenages();
 }
 
